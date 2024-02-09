@@ -1,0 +1,7 @@
+flask
+opneai
+SpeechRecognition
+threading 
+tempfile
+re 
+os
