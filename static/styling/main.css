@@ -1,0 +1,153 @@
+* {
+    box-sizing: border-box;
+    /* This ensures padding is included in the total width and height */
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f8f9fa;
+    margin: 0;
+    padding: 0;
+    display: block;
+    min-height: 100vh;
+    text-align: center;
+    overflow: hidden;
+    /* Prevent scrolling */
+}
+
+@keyframes pulsate {
+    0% {
+        transform: scale(1);
+        opacity: 1;
+    }
+
+    50% {
+        transform: scale(1.25);
+        opacity: 0.85;
+    }
+
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+.mic-icon.listening {
+    animation: pulsate 2s ease-in-out infinite;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f8f9fa;
+    margin: 0;
+    padding: 0;
+}
+
+h1 {
+    text-align: center;
+    color: #333;
+    margin-top: 20px;
+}
+
+.container {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    max-width: 800px;
+    width: 100%;
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    margin-top: -200px;
+}
+
+.box {
+    width: 45%;
+    min-height: 300px;
+    /* Use min-height to ensure boxes can expand as needed */
+    border: 1px solid #f1f1f1;
+    border-radius: 10px;
+    padding: 20px;
+    background-color: #f0f0f0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    transition: all 0.3s ease;
+}
+
+.box:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.mic-icon {
+    font-size: 64px;
+    margin-bottom: 20px;
+    color: #007bff;
+}
+
+#record-button {
+    padding: 10px 20px;
+    font-size: 18px;
+    border: none;
+    border-radius: 5px;
+    background-color: #007bff;
+    color: #fff;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+#record-button:hover {
+    background-color: #0056b3;
+}
+
+.recording {
+    background-color: #dc3545 !important;
+}
+
+.output-box {
+    background-color: #f0f0f0;
+    color: #495057;
+    border: 1px solid #ced4da;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    min-height: 300px;
+    /* Use min-height to ensure boxes can expand as needed */
+    border-radius: 10px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    transition: all 0.3s ease;
+}
+
+.output-box p {
+    margin-top: 5px;
+    font-size: 20px;
+    color: #212529;
+}
+
+.output-box p:first-child {
+    font-size: 20px;
+}
+
+.output-box p:last-child {
+    font-style: italic;
+    font-weight: bold;
+
+}
+
+.title {
+    margin-top: 70px;
+    font-size: 25px;
+}
+
+.centered-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    height: calc(100vh - 40px);
+}

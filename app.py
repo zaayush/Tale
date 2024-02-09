@@ -1,20 +1,10 @@
 from flask import Flask, render_template, request, jsonify
 import openai
-import speech_recognition as sr
-from openai import OpenAI
 import re
-import threading
 import tempfile
 import os
 
-# Variables to manage state
 transcription_buffer = []  # Buffer to hold continuous transcriptions
-delay_timer = None  # Timer object for implementing the delay
-
-# Initialize any required global variables
-transcription_accumulator = []  # Accumulates transcription text from each chunk
-processing_lock = threading.Lock()  # Ensures thread-safe operations on the accumulator
-
 
 app = Flask(__name__)
 
@@ -22,10 +12,9 @@ try:
     OPENAI_API_KEY = os.environ["OPENAI_API_KEY"]
 except KeyError:
     SOME_SECRET = "Token not available!"
-    # or raise an error if it's not available so that the workflow fails
+
 # Initialize OpenAI client
 openai.api_key = "OPENAI_API_KEY"
-
 
 """
 Transcription through whisper
@@ -55,10 +44,10 @@ def get_completion(prompt):
             model="gpt-3.5-turbo",
             messages=[
                 {
-                    "role": "system",
-                    "content": "You are assisting Aphasic patients with their speech. Return the most appropriate word based on the context and only return the word. The text will contain stutters or repetitions.",
+                    "role": "user",
+                    "content": "Return the most appropriate word based on the context and only return the word. "
+                    + prompt,
                 },
-                {"role": "user", "content": prompt},
             ],
         )
         completion = response.choices[0].message.content.strip()
@@ -72,15 +61,19 @@ Stutter detection
 """
 
 
-def detect_stutter_patterns(transcribed_text):
+def detect_stutter_patterns():
+    text = " ".join(transcription_buffer)
+    text = re.sub(r"(\b\w\b)\.\s*", r"\1 ", text)
+    text = re.sub(r"(\w)-\s*", r"\1 ", text)
+
     repetition_pattern = r"(\b\w+\b)(?:\s+\1\b)+"  # Words repeated consecutively
     prolongation_pattern = r"(\w)\1{2,}"  # Characters repeated more than twice
-    interjection_pattern = r"\b(uh|um|ah)\b"  # Common interjections
+    interjection_pattern = r"\b(uh|um|ah|uhh|ahh|umm)\b"  # Common interjections# New patterns for stutter detection
 
     # Detect
-    repetitions = re.findall(repetition_pattern, transcribed_text)
-    prolongations = re.findall(prolongation_pattern, transcribed_text)
-    interjections = re.findall(interjection_pattern, transcribed_text)
+    repetitions = re.findall(repetition_pattern, text)
+    prolongations = re.findall(prolongation_pattern, text)
+    interjections = re.findall(interjection_pattern, text)
 
     # Return detected patterns
     detected = {
@@ -99,7 +92,6 @@ Word retrieval after stutter detection
 def handle_stutter_detection():
     combined_text = " ".join(transcription_buffer)
     response = get_completion(combined_text)
-    print(response)
     # Clear the buffer after processing
     transcription_buffer.clear()
     return response
@@ -113,14 +105,11 @@ Processing chunks of audio
 def process_transcription_chunk(audio_chunk_path):
     global transcription_buffer
     transcribed_text = transcribe_audio(audio_chunk_path)
-    stutter_detected = detect_stutter_patterns(transcribed_text)
-    print("Transcribed text: ", transcribed_text)
-    print("Stutter detected: ", stutter_detected)
 
     # Append transcription to a buffer for potentially accumulating more context
     transcription_buffer.append(transcribed_text)
 
-    return transcribed_text, stutter_detected
+    return transcribed_text
 
 
 """
@@ -139,20 +128,22 @@ def record():
         print("No audio file provided")
         return jsonify({"error": "No audio file provided"}), 400
 
-    # Save the incoming audio chunk to a temporary file
     audio_file = request.files["audio-file"]
+
+    # Save the incoming audio chunk to a temporary file
     _, temp_path = tempfile.mkstemp(suffix=".wav")
     audio_file.save(temp_path)
 
     try:
         # Transcribe the audio chunk
-        transcribed_text, stutter_detected = process_transcription_chunk(temp_path)
+        transcribed_text = process_transcription_chunk(temp_path)
+        stutter_detected = detect_stutter_patterns()
 
-        # If a stutter is detected, call get_completion
+        suggestion = ""
         if stutter_detected:
-            suggestion = handle_stutter_detection()
-        else:
-            suggestion = "No significant stutter detected or speech is clear."
+            suggestion = (
+                handle_stutter_detection()
+            )  # Assuming this function now directly uses `transcribed_text`
 
         os.remove(temp_path)  # Clean up the temporary file after processing
 
