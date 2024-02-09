@@ -15,7 +15,7 @@ source venv/bin/activate
 pip install -r requirements.txt
 flask run
 ```
-Or just go the link : [Tale -WebApp](https://tale-app.azurewebsites.net)
+Go the link : [Tale -WebApp](https://tale-app.azurewebsites.net)
 
 ## What's Included
 
