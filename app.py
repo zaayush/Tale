@@ -14,7 +14,7 @@ except KeyError:
     SOME_SECRET = "Token not available!"
 
 # Initialize OpenAI client
-openai.api_key = "OPENAI_API_KEY"
+openai.api_key = OPENAI_API_KEY
 
 """
 Transcription through whisper
