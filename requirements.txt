@@ -1,7 +1,4 @@
 flask
-opneai
+openai
 SpeechRecognition
-threading 
-tempfile
-re 
-os
+

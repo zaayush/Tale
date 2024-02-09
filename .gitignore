@@ -3,4 +3,4 @@ venv
 *.sqlite3
 *.db
 *.pyc
-_pycche_
+_pycache_
