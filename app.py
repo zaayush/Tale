@@ -18,8 +18,13 @@ processing_lock = threading.Lock()  # Ensures thread-safe operations on the accu
 
 app = Flask(__name__)
 
+try:
+    OPENAI_API_KEY = os.environ["OPENAI_API_KEY"]
+except KeyError:
+    SOME_SECRET = "Token not available!"
+    # or raise an error if it's not available so that the workflow fails
 # Initialize OpenAI client
-openai.api_key = "API_KEY"
+openai.api_key = "OPENAI_API_KEY"
 
 
 """
