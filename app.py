@@ -9,8 +9,8 @@ transcription_buffer = []  # Buffer to hold continuous transcriptions
 app = Flask(__name__)
 
 try:
-    OPENAI_API_KEY = os.environ["OPENAI_API_KEY"]
-except KeyError:
+    OPENAI_API_KEY = os.getenv('API_KEY')
+except Exception as e:
     SOME_SECRET = "Token not available!"
 
 # Initialize OpenAI client
