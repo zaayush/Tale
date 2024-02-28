@@ -1,26 +1,26 @@
-from flask import Flask, render_template, request, jsonify
+# Import necessary modules
+from flask import Flask, render_template, request, jsonify, send_from_directory
 import openai
 import re
 import tempfile
 import os
 
-transcription_buffer = []  # Buffer to hold continuous transcriptions
-
+# Initialize Flask app
 app = Flask(__name__)
 
+# Configure OpenAI API key
 try:
     OPENAI_API_KEY = os.getenv('API_KEY')
 except Exception as e:
-    SOME_SECRET = "Token not available!"
+    OPENAI_API_KEY = "Token not available!"
 
 # Initialize OpenAI client
 openai.api_key = OPENAI_API_KEY
 
-"""
-Transcription through whisper
-"""
+# Buffer to hold continuous transcriptions
+transcription_buffer = []
 
-
+# Transcribe audio using OpenAI
 def transcribe_audio(file_path):
     try:
         response = openai.audio.transcriptions.create(
@@ -32,12 +32,7 @@ def transcribe_audio(file_path):
     except Exception as e:
         return str(e)
 
-
-"""
-GPT word retrieval 
-"""
-
-
+# Retrieve word completions using OpenAI
 def get_completion(prompt):
     try:
         response = openai.chat.completions.create(
@@ -55,12 +50,7 @@ def get_completion(prompt):
     except Exception as e:
         return str(e)
 
-
-"""
-Stutter detection
-"""
-
-
+# Detect stutter patterns
 def detect_stutter_patterns():
     text = " ".join(transcription_buffer)
     text = re.sub(r"(\b\w\b)\.\s*", r"\1 ", text)
@@ -68,7 +58,7 @@ def detect_stutter_patterns():
 
     repetition_pattern = r"(\b\w+\b)(?:\s+\1\b)+"  # Words repeated consecutively
     prolongation_pattern = r"(\w)\1{2,}"  # Characters repeated more than twice
-    interjection_pattern = r"\b(uh|um|ah|uhh|ahh|umm)\b"  # Common interjections# New patterns for stutter detection
+    interjection_pattern = r"\b(uh|um|ah|uhh|ahh|umm)\b"  # Common interjections
 
     # Detect
     repetitions = re.findall(repetition_pattern, text)
@@ -83,45 +73,31 @@ def detect_stutter_patterns():
     }
     return any(detected.values())
 
-
-"""
-Word retrieval after stutter detection
-"""
-
-
+# Retrieve word after stutter detection
 def handle_stutter_detection():
     combined_text = " ".join(transcription_buffer)
     response = get_completion(combined_text)
-    # Clear the buffer after processing
     transcription_buffer.clear()
     return response
 
-
-"""
-Processing chunks of audio
-"""
-
-
+# Process transcription chunk
 def process_transcription_chunk(audio_chunk_path):
     global transcription_buffer
     transcribed_text = transcribe_audio(audio_chunk_path)
-
-    # Append transcription to a buffer for potentially accumulating more context
     transcription_buffer.append(transcribed_text)
-
     return transcribed_text
 
+# Route to serve the video file
+@app.route('/video')
+def video():
+    return send_from_directory('Z:\Documents\Tale_HIC\Tale', 'video.mp4')
 
-"""
-Front End Code below
-"""
-
-
+# Main route
 @app.route("/")
 def index():
     return render_template("index.html")
 
-
+# Route to handle audio recording
 @app.route("/record", methods=["POST"])
 def record():
     if "audio-file" not in request.files:
@@ -135,23 +111,18 @@ def record():
     audio_file.save(temp_path)
 
     try:
-        # Transcribe the audio chunk
         transcribed_text = process_transcription_chunk(temp_path)
         stutter_detected = detect_stutter_patterns()
 
         suggestion = ""
         if stutter_detected:
-            suggestion = (
-                handle_stutter_detection()
-            )  # Assuming this function now directly uses `transcribed_text`
+            suggestion = handle_stutter_detection()
 
         os.remove(temp_path)  # Clean up the temporary file after processing
 
-        # Respond with the transcription and any detected stutter patterns
         return jsonify({"transcription": transcribed_text, "suggestion": suggestion})
     except Exception as e:
         return jsonify({"error": str(e)}), 500
-
 
 if __name__ == "__main__":
     app.run(debug=True)

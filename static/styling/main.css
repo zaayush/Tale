@@ -36,13 +36,6 @@ body {
     animation: pulsate 2s ease-in-out infinite;
 }
 
-body {
-    font-family: Arial, sans-serif;
-    background-color: #f8f9fa;
-    margin: 0;
-    padding: 0;
-}
-
 h1 {
     text-align: center;
     color: #333;
@@ -88,7 +81,7 @@ h1 {
     color: #007bff;
 }
 
-#record-button {
+#record-button, #demo-button {
     padding: 10px 20px;
     font-size: 18px;
     border: none;
@@ -97,9 +90,10 @@ h1 {
     color: #fff;
     cursor: pointer;
     transition: background-color 0.3s ease;
+    margin-bottom: 10px;
 }
 
-#record-button:hover {
+#record-button:hover, #demo-button:hover {
     background-color: #0056b3;
 }
 
