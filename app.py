@@ -47,7 +47,7 @@ def get_completion(prompt):
             messages=[
                 {
                     "role": "user",
-                    "content": "You are a assisant trying to help patients with aphasia communicate. You will be provided a transcript of a users communication.Return the words that finish the sentence or the word the user is trying to describe based on the context. But only return the top 10 words. "
+                    "content": "You are a assisant trying to help patients with aphasia communicate. You will be provided a transcript of a users communication.Return the words that finish the sentence or the word the user is trying to describe based on the context. But only return the top 10 words and nothing else. "
                     + prompt,
                 },
             ],

@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Aphasia Speech Assistance</title>
     <link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename='styling/main.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
 </head>
 
 <body>
@@ -73,6 +74,7 @@
         const wordButtons = words.map(word => {
             const button = document.createElement('button');
             button.textContent = word.replace('- ', ''); // Remove the "- " prefix
+            button.textContent = word.replace(/^\d+\.\s*/, ''); 
             button.classList.add('word-button');
             button.addEventListener('click', handleWordButtonClick);
             suggestionContainer.appendChild(button);
