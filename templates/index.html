@@ -20,10 +20,19 @@
                 <button id="record-button" type="button" onclick="toggleRecording()">Start Listening</button>
             </div>
 
-            <div class="box output-box">
+            <div class="box output-box" id="output-box">
                 <p id="transcribed-text">You Said: </p>
-                <p id="suggestion-text">Suggested Word: </p>
+                <!-- <p id="suggestion-text">Suggested Words</p> -->
             </div>
+            <!-- <div class="box"> -->
+
+            <!-- </div> -->
+        </div>
+    </div>
+    <div></div>
+        <div class="container-suggestions">
+            <p id="suggestion-text">Suggested Words</p>
+            <div id="suggestion-buttons-row"></div>
         </div>
     </div>
 
@@ -56,6 +65,50 @@
                 audioChunks = []; // reset for the next recording
             };
         }
+        function createWordButtons(suggestions) {
+        const suggestionContainer = document.getElementById('suggestion-buttons-row');
+        suggestionContainer.innerHTML = ''; // Clear previous suggestions
+
+        const words = suggestions.split('\n'); // Remove the first item (e.g., "- Food")
+        const wordButtons = words.map(word => {
+            const button = document.createElement('button');
+            button.textContent = word.replace('- ', ''); // Remove the "- " prefix
+            button.classList.add('word-button');
+            button.addEventListener('click', handleWordButtonClick);
+            suggestionContainer.appendChild(button);
+        });
+        }
+        
+        async function synthesizeAudio(text) {
+        const response = await fetch('/synthesize', {
+            method: 'POST',
+            headers: {
+            'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ text })
+        });
+
+        if (!response.ok) {
+            throw new Error(`Failed to synthesize audio: ${response.statusText}`);
+        }
+
+        const audioBlob = await response.blob();
+        const audioUrl = URL.createObjectURL(audioBlob);
+        const audioElement = new Audio(audioUrl);
+        audioElement.play();
+        }
+
+
+        function handleWordButtonClick(event) {
+            const selectedWord = event.target.textContent;
+            synthesizeAudio(selectedWord)
+                .then(audioBlob => {
+                const audioUrl = URL.createObjectURL(audioBlob);
+                const audioElement = new Audio(audioUrl);
+                audioElement.play();
+                })
+                .catch(error => console.error('Error synthesizing audio:', error));
+        }
 
         function sendAudioToBackend() {
             const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
@@ -69,9 +122,10 @@
                         console.error("Error:", data.error);
                     } else {
                         document.getElementById('transcribed-text').textContent = "You said: " + data.transcription;
+
                         if (data.suggestion) {
-                            document.getElementById('suggestion-text').textContent = "AI suggestion: " + data.suggestion;
-                        }
+                        createWordButtons(data.suggestion);
+}
                     }
                 })
                 .catch(error => console.error("Error uploading audio chunk:", error));

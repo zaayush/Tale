@@ -5,7 +5,7 @@
 
 body {
     font-family: Arial, sans-serif;
-    background-color: #f8f9fa;
+    background-color: #ffffff;
     margin: 0;
     padding: 0;
     display: block;
@@ -38,7 +38,7 @@ body {
 
 body {
     font-family: Arial, sans-serif;
-    background-color: #f8f9fa;
+    background-color: #ffffff;
     margin: 0;
     padding: 0;
 }
@@ -55,7 +55,7 @@ h1 {
     align-items: center;
     max-width: 800px;
     width: 100%;
-    background-color: #fff;
+    background-color: #6b1aece6;
     border-radius: 10px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     padding: 20px;
@@ -150,4 +150,59 @@ h1 {
     align-items: center;
     flex-direction: column;
     height: calc(100vh - 40px);
+}
+
+.centered-container-sugg {
+    /* display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    height: calc(50vh - 40px); */
+}
+
+.container-suggestions {
+        /* display: flex; */
+        /* justify-content: space-around; */
+        /* align-items: center;
+        max-width: 800px;
+        width: 100%;
+        height: 100px;
+        background-color: #fff;
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        /* padding: 20px; */
+        margin-top: -350px;
+    }
+
+/* Suggested Word Buttons Row */
+#suggestion-buttons-row {
+    display: flex;
+    justify-content: center;
+    margin-top: 1rem;
+}
+
+/* Suggested Word Buttons */
+#suggestion-buttons-row #suggestion-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.word-button {
+    background-color: #6b1aece6;
+    border: none;
+    color: #efeaea;
+    padding: 0.5rem 1rem;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 1rem;
+    margin: 0.25rem;
+    cursor: pointer;
+    border-radius: 0.25rem;
+    transition: background-color 0.3s ease;
+}
+
+.word-button:hover {
+    background-color: #b26af1;
 }
