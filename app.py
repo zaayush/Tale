@@ -47,7 +47,7 @@ def get_completion(prompt):
             messages=[
                 {
                     "role": "user",
-                    "content": "You are a assisant trying to help patients with aphasia communicate. You will be provided a transcript of a users communication.Return the words that finish the sentence or the word the user is trying to describe based on the context. But only return the top 10 words and nothing else. "
+                    "content": "You are a assisant trying to help patients with aphasia communicate. You will be provided a transcript of a users communication.Return the words that finish the sentence or the word the user is trying to describe based on the context. But only return the top 10 words. "
                     + prompt,
                 },
             ],
@@ -107,10 +107,10 @@ Processing chunks of audio
 
 def process_transcription_chunk(audio_chunk_path):
     global transcription_buffer
-    # transcribed_text = transcribe_audio(audio_chunk_path)
+    transcribed_text = transcribe_audio(audio_chunk_path)
 
     #For Testing
-    transcribed_text = "I am, I am really hungry. I want to eat, uh, uh, uh, uh."
+    # transcribed_text = "I am, I am really hungry. I want to eat, uh, uh, uh, uh."
 
     # Append transcription to a buffer for potentially accumulating more context
     transcription_buffer.append(transcribed_text)
