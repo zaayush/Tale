@@ -1,153 +1,189 @@
+/* Reset styles */
 * {
     box-sizing: border-box;
-    /* This ensures padding is included in the total width and height */
-}
-
-body {
-    font-family: Arial, sans-serif;
-    background-color: #f8f9fa;
     margin: 0;
     padding: 0;
-    display: block;
+  }
+  
+  /* General styles */
+  body {
+    font-family: 'Roboto', sans-serif;
+    background: linear-gradient(135deg, #6772e5, #8c96f5);
+    color: #ffffff;
+    display: flex;
+    flex-direction: column;
     min-height: 100vh;
     text-align: center;
-    overflow: hidden;
-    /* Prevent scrolling */
-}
-
-@keyframes pulsate {
-    0% {
-        transform: scale(1);
-        opacity: 1;
-    }
-
-    50% {
-        transform: scale(1.25);
-        opacity: 0.85;
-    }
-
-    100% {
-        transform: scale(1);
-        opacity: 1;
-    }
-}
-
-.mic-icon.listening {
-    animation: pulsate 2s ease-in-out infinite;
-}
-
-body {
-    font-family: Arial, sans-serif;
-    background-color: #f8f9fa;
-    margin: 0;
-    padding: 0;
-}
-
-h1 {
-    text-align: center;
-    color: #333;
-    margin-top: 20px;
-}
-
-.container {
+    overflow: hidden; /* Prevent scrolling */
+  }
+  
+  /* Title */
+  .title {
+    margin-top: 2rem;
+    font-size: 3rem;
+    font-weight: 700;
+    color: #ffffff;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  }
+  
+  /* Container */
+  .centered-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-grow: 1;
+  }
+  
+  .container {
     display: flex;
     justify-content: space-around;
     align-items: center;
-    max-width: 800px;
+    max-width: 1000px;
     width: 100%;
-    background-color: #fff;
-    border-radius: 10px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    padding: 20px;
-    margin-top: -200px;
-}
-
-.box {
+    background-color: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border-radius: 20px;
+    padding: 2rem;
+    margin-top: 2rem;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1), 0 6px 6px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* Boxes */
+  .box {
     width: 45%;
-    min-height: 300px;
-    /* Use min-height to ensure boxes can expand as needed */
-    border: 1px solid #f1f1f1;
-    border-radius: 10px;
-    padding: 20px;
-    background-color: #f0f0f0;
+    min-height: 400px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 20px;
+    padding: 2rem;
+    background-color: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
     transition: all 0.3s ease;
-}
-
-.box:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-}
-
-.mic-icon {
-    font-size: 64px;
-    margin-bottom: 20px;
-    color: #007bff;
-}
-
-#record-button {
-    padding: 10px 20px;
-    font-size: 18px;
+  }
+  
+  .box:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2), 0 6px 6px rgba(0, 0, 0, 0.2);
+  }
+  
+  /* Record Box */
+  .mic-icon {
+    font-size: 5rem;
+    margin-bottom: 1rem;
+    color: #ffffff;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  }
+  
+  #record-button {
+    padding: 1rem 2rem;
+    font-size: 1.2rem;
     border: none;
-    border-radius: 5px;
-    background-color: #007bff;
-    color: #fff;
+    border-radius: 30px;
+    background-color: #ffffff;
+    color: #6772e5;
+    font-weight: 700;
     cursor: pointer;
-    transition: background-color 0.3s ease;
-}
-
-#record-button:hover {
-    background-color: #0056b3;
-}
-
-.recording {
+    transition: background-color 0.3s ease, color 0.3s ease;
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+  }
+  
+  #record-button:hover {
+    background-color: #6772e5;
+    color: #ffffff;
+  }
+  
+  .recording {
     background-color: #dc3545 !important;
-}
-
-.output-box {
-    background-color: #f0f0f0;
-    color: #495057;
-    border: 1px solid #ced4da;
+  }
+  
+  /* Output Box */
+  .output-box {
+    background-color: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    color: #ffffff;
+    border: 1px solid rgba(255, 255, 255, 0.2);
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-    min-height: 300px;
-    /* Use min-height to ensure boxes can expand as needed */
-    border-radius: 10px;
-    padding: 20px;
+    min-height: 400px;
+    border-radius: 20px;
+    padding: 2rem;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
     transition: all 0.3s ease;
-}
-
-.output-box p {
-    margin-top: 5px;
-    font-size: 20px;
-    color: #212529;
-}
-
-.output-box p:first-child {
-    font-size: 20px;
-}
-
-.output-box p:last-child {
+  }
+  
+  .output-box p {
+    margin-top: 1rem;
+    font-size: 1.4rem;
+    color: #ffffff;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  }
+  
+  .output-box p:first-child {
+    font-size: 1.4rem;
+  }
+  
+  .output-box p:last-child {
     font-style: italic;
     font-weight: bold;
-
-}
-
-.title {
-    margin-top: 70px;
-    font-size: 25px;
-}
-
-.centered-container {
+  }
+  
+  /* Suggested Word Buttons Row */
+  #suggestion-buttons-row {
     display: flex;
     justify-content: center;
-    align-items: center;
-    flex-direction: column;
-    height: calc(100vh - 40px);
-}
+    margin-top: 3rem;
+  }
+  
+  /* Suggested Word Buttons */
+  #suggestion-buttons-row #suggestion-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  
+  .word-button {
+    background-color: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+    border: none;
+    color: #ffffff;
+    padding: 1rem 2rem;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 1.2rem;
+    margin: 0.5rem;
+    cursor: pointer;
+    border-radius: 30px;
+    transition: background-color 0.3s ease, color 0.3s ease;
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+  }
+  
+  .word-button:hover {
+    background-color: #ffffff;
+    color: #6772e5;
+  }
+  
+  /* Animation */
+  @keyframes pulsate {
+    0% {
+      transform: scale(1);
+      opacity: 1;
+    }
+    50% {
+      transform: scale(1.25);
+      opacity: 0.85;
+    }
+    100% {
+      transform: scale(1);
+      opacity: 1;
+    }
+  }
+  
+  .mic-icon.listening {
+    animation: pulsate 2s ease-in-out infinite;
+  }
