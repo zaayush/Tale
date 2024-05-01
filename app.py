@@ -53,7 +53,7 @@ def get_completion(prompt):
             ],
         )
         completion = response.choices[0].message.content.strip()
-        print(response)
+        # print(response)
         return completion
     except Exception as e:
         return str(e)
@@ -145,8 +145,8 @@ def record():
         transcribed_text = process_transcription_chunk(temp_path)
         stutter_detected = detect_stutter_patterns()
 
-        print(transcribed_text)
-        print(stutter_detected)
+        # print(transcribed_text)
+        # print(stutter_detected)
 
         stutter_detected = True
 
@@ -169,7 +169,7 @@ def record():
 @app.route('/synthesize', methods=['POST'])
 def synthesize_audio():
     text = request.json['text']
-    print(text)
+    # print(text)
     try:
         speech_file_path = Path(__file__).parent / f"{text}.mp3"
         response = openai.audio.speech.create(
@@ -181,6 +181,10 @@ def synthesize_audio():
         return send_file(speech_file_path, as_attachment=True, download_name=f"{text}.mp3")
     except Exception as e:
         return str(e), 500
+    finally:
+        # Delete the file after sending it to the client
+        if os.path.exists(speech_file_path):
+            os.remove(speech_file_path)
 
 if __name__ == "__main__":
     app.run(debug=True)
