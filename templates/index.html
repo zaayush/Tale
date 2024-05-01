@@ -67,9 +67,10 @@
             };
         }
         function createWordButtons(suggestions) {
-        const suggestionContainer = document.getElementById('suggestion-buttons-row');
-        suggestionContainer.innerHTML = ''; // Clear previous suggestions
+    const suggestionContainer = document.getElementById('suggestion-buttons-row');
+    suggestionContainer.innerHTML = ''; // Clear previous suggestions
 
+    if (!suggestions.includes("I'm sorry")) { // Check if the text contains "I'm sorry"
         const words = suggestions.split('\n'); // Remove the first item (e.g., "- Food")
         const wordButtons = words.map(word => {
             const button = document.createElement('button');
@@ -79,7 +80,12 @@
             button.addEventListener('click', handleWordButtonClick);
             suggestionContainer.appendChild(button);
         });
-        }
+    } else {
+        // If the text contains "I'm sorry", do not create any buttons
+        console.log("No context found!");
+    }
+}
+
         
         async function synthesizeAudio(text) {
         const response = await fetch('/synthesize', {
