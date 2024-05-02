@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Aphasia Speech Assistance</title>
     <link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename='styling/main.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
 </head>
 
 <body>
@@ -20,10 +21,19 @@
                 <button id="record-button" type="button" onclick="toggleRecording()">Start Listening</button>
             </div>
 
-            <div class="box output-box">
+            <div class="box output-box" id="output-box">
                 <p id="transcribed-text">You Said: </p>
-                <p id="suggestion-text">Suggested Word: </p>
+                <!-- <p id="suggestion-text">Suggested Words</p> -->
             </div>
+            <!-- <div class="box"> -->
+
+            <!-- </div> -->
+        </div>
+    </div>
+    <div></div>
+        <div class="container-suggestions">
+            <p id="suggestion-text">Suggested Words</p>
+            <div id="suggestion-buttons-row"></div>
         </div>
     </div>
 
@@ -45,6 +55,8 @@
                         }
                     };
                     mediaRecorder.start(1000);
+
+                    // intervalId = setInterval(sendAudioChunks, 10000);
                 })
                 .catch(error => console.error("Error accessing audio stream:", error));
         }
@@ -52,9 +64,89 @@
         function stopRecording() {
             mediaRecorder.stop(); // This will trigger the onstop event
             mediaRecorder.onstop = () => {
+                // clearInterval(intervalId); // Stop the interval
+                // audioChunks = []; // reset for the next recording
                 sendAudioToBackend();
                 audioChunks = []; // reset for the next recording
             };
+        }
+        function createWordButtons(suggestions) {
+            const suggestionContainer = document.getElementById('suggestion-buttons-row');
+            suggestionContainer.innerHTML = ''; // Clear previous suggestions
+
+            if (!suggestions.includes("I'm sorry")) { // Check if the text contains "I'm sorry"
+                const words = suggestions.split('\n'); // Remove the first item (e.g., "- Food")
+                const wordButtons = words.map(word => {
+                    const button = document.createElement('button');
+                    button.textContent = word.replace('- ', ''); // Remove the "- " prefix
+                    button.textContent = word.replace(/^\d+\.\s*/, '').replace('- ', ''); 
+                    button.classList.add('word-button');
+                    button.addEventListener('click', handleWordButtonClick);
+                    suggestionContainer.appendChild(button);
+                });
+            } else {
+                // If the text contains "I'm sorry", do not create any buttons
+                console.log("No context found!");
+            }
+        }
+
+        let intervalId;
+
+        function sendAudioChunks() {
+            // Get the last 15 seconds of audio chunks
+            const startIndex = audioChunks.length > 15000 ? audioChunks.length - 15000 : 0;
+            const lastChunks = audioChunks.slice(startIndex);
+
+            const audioBlob = new Blob(lastChunks, { type: 'audio/wav' });
+            const formData = new FormData();
+            formData.append("audio-file", audioBlob);
+
+            fetch("/record", { method: "POST", body: formData })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.error) {
+                        console.error("Error:", data.error);
+                    } else {
+                        document.getElementById('transcribed-text').textContent = "You said: " + data.transcription;
+
+                        if (data.suggestion) {
+                            createWordButtons(data.suggestion);
+                        }
+                    }
+                })
+                .catch(error => console.error("Error uploading audio chunk:", error));
+        }
+
+        
+        async function synthesizeAudio(text) {
+            const response = await fetch('/synthesize', {
+                method: 'POST',
+                headers: {
+                'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ text })
+            });
+
+            if (!response.ok) {
+                throw new Error(`Failed to synthesize audio: ${response.statusText}`);
+            }
+
+            const audioBlob = await response.blob();
+            const audioUrl = URL.createObjectURL(audioBlob);
+            const audioElement = new Audio(audioUrl);
+            audioElement.play();
+        }
+
+
+        function handleWordButtonClick(event) {
+            const selectedWord = event.target.textContent;
+            synthesizeAudio(selectedWord)
+                .then(audioBlob => {
+                const audioUrl = URL.createObjectURL(audioBlob);
+                const audioElement = new Audio(audioUrl);
+                audioElement.play();
+                })
+                .catch(error => console.error('Error synthesizing audio:', error));
         }
 
         function sendAudioToBackend() {
@@ -69,9 +161,10 @@
                         console.error("Error:", data.error);
                     } else {
                         document.getElementById('transcribed-text').textContent = "You said: " + data.transcription;
+
                         if (data.suggestion) {
-                            document.getElementById('suggestion-text').textContent = "AI suggestion: " + data.suggestion;
-                        }
+                        createWordButtons(data.suggestion);
+}
                     }
                 })
                 .catch(error => console.error("Error uploading audio chunk:", error));

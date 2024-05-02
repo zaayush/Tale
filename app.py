@@ -1,8 +1,9 @@
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request, jsonify, send_file
 import openai
 import re
 import tempfile
 import os
+from pathlib import Path
 
 transcription_buffer = []  # Buffer to hold continuous transcriptions
 
@@ -19,6 +20,7 @@ openai.api_key = OPENAI_API_KEY
 """
 Transcription through whisper
 """
+
 
 
 def transcribe_audio(file_path):
@@ -45,12 +47,13 @@ def get_completion(prompt):
             messages=[
                 {
                     "role": "user",
-                    "content": "Return the most appropriate word based on the context and only return the word. "
+                    "content": "You are a assisant trying to help patients with aphasia communicate. You will be provided a transcript of a users communication.Return the words that finish the sentence or the word the user is trying to describe based on the context. But only return the top 10 words. "
                     + prompt,
                 },
             ],
         )
         completion = response.choices[0].message.content.strip()
+        # print(response)
         return completion
     except Exception as e:
         return str(e)
@@ -106,6 +109,9 @@ def process_transcription_chunk(audio_chunk_path):
     global transcription_buffer
     transcribed_text = transcribe_audio(audio_chunk_path)
 
+    #For Testing
+    # transcribed_text = "I am, I am really hungry. I want to eat, uh, uh, uh, uh."
+
     # Append transcription to a buffer for potentially accumulating more context
     transcription_buffer.append(transcribed_text)
 
@@ -139,10 +145,18 @@ def record():
         transcribed_text = process_transcription_chunk(temp_path)
         stutter_detected = detect_stutter_patterns()
 
+        # print(transcribed_text)
+        # print(stutter_detected)
+
+        stutter_detected = True
+
         suggestion = ""
         if stutter_detected:
+            suggestion = get_completion(" ".join(transcription_buffer))
             suggestion = (
+
                 handle_stutter_detection()
+                # get_completion(transcribed_text)
             )  # Assuming this function now directly uses `transcribed_text`
 
         os.remove(temp_path)  # Clean up the temporary file after processing
@@ -152,6 +166,25 @@ def record():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
+@app.route('/synthesize', methods=['POST'])
+def synthesize_audio():
+    text = request.json['text']
+    # print(text)
+    try:
+        speech_file_path = Path(__file__).parent / f"{text}.mp3"
+        response = openai.audio.speech.create(
+            model="tts-1",
+            voice="alloy",
+            input=text,
+        )
+        response.stream_to_file(speech_file_path)
+        return send_file(speech_file_path, as_attachment=True, download_name=f"{text}.mp3")
+    except Exception as e:
+        return str(e), 500
+    finally:
+        # Delete the file after sending it to the client
+        if os.path.exists(speech_file_path):
+            os.remove(speech_file_path)
 
 if __name__ == "__main__":
     app.run(debug=True)
